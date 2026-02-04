@@ -7,7 +7,7 @@ const sql = postgres(process.env.POSTGRES_URL_NON_POOLING!, {
   ssl: "require",
   max: 1,
   idle_timeout: 20,
-  connect_timeout: 10,
+  connect_timeout: 30,
 });
 
 async function seedUsers(client: typeof sql) {
@@ -116,19 +116,43 @@ export async function GET() {
       );
     }
 
+    console.log("Starting database seeding...");
+    console.log("Database host:", process.env.POSTGRES_HOST);
+
     await sql.begin(async (sql) => {
+      console.log("Seeding users...");
       await seedUsers(sql);
+      console.log("Seeding customers...");
       await seedCustomers(sql);
+      console.log("Seeding invoices...");
       await seedInvoices(sql);
+      console.log("Seeding revenue...");
       await seedRevenue(sql);
     });
 
+    console.log("Database seeded successfully!");
     return Response.json({ message: "Database seeded successfully" });
   } catch (error) {
     console.error("Seeding error:", error);
+
+    // Provide more helpful error messages
+    let errorMessage = "Unknown error";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+
+      // Check for common Neon errors
+      if (
+        error.message.includes("CONNECT_TIMEOUT") ||
+        error.message.includes("ETIMEDOUT")
+      ) {
+        errorMessage =
+          "Database connection timeout. The database might be suspended (Neon free tier). Please try again in a few seconds to wake it up.";
+      }
+    }
+
     return Response.json(
       {
-        error: error instanceof Error ? error.message : "Unknown error",
+        error: errorMessage,
         details: error,
       },
       { status: 500 },
