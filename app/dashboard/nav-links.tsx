@@ -1,5 +1,6 @@
 "use client";
 
+// Navigation links component for dashboard sidebar
 import {
   UserGroupIcon,
   HomeIcon,
