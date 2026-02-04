@@ -1,6 +1,6 @@
 const { config } = require("dotenv");
 const postgres = require("postgres");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 
 // Load environment variables
 config({ path: ".env" });
