@@ -4,7 +4,13 @@
     "build": "next build",
     "dev": "next dev --turbopack",
     "start": "next start",
-    "seed": "node scripts/seed.js"
+    "seed": "node scripts/seed.js",
+    "seed:cli": "node scripts/seed-cli.js",
+    "seed:direct": "node scripts/seed-direct.js",
+    "seed:simple": "node scripts/seed-simple.js",
+    "seed:local": "node scripts/seed-local.js",
+    "check:db": "node scripts/check-db.js",
+    "view:db": "node scripts/view-db.js"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",

@@ -6,7 +6,7 @@ import { invoices, customers, revenue, users } from "../lib/placeholder-data";
 // Create a new connection for each request to avoid connection pooling issues
 function createConnection() {
   return postgres(process.env.POSTGRES_URL_NON_POOLING!, {
-    ssl: "require",
+    ssl: process.env.POSTGRES_HOST === "localhost" ? false : "require",
     max: 1,
     idle_timeout: 20,
     connect_timeout: 60, // Increased to 60 seconds for suspended databases
