@@ -6,6 +6,8 @@ import { invoices, customers, revenue, users } from "../lib/placeholder-data";
 const sql = postgres(process.env.POSTGRES_URL_NON_POOLING!, {
   ssl: "require",
   max: 1,
+  idle_timeout: 20,
+  connect_timeout: 10,
 });
 
 async function seedUsers(client: typeof sql) {
@@ -107,6 +109,13 @@ async function seedRevenue(client: typeof sql) {
 
 export async function GET() {
   try {
+    // Check if database URL is configured
+    if (!process.env.POSTGRES_URL_NON_POOLING) {
+      throw new Error(
+        "POSTGRES_URL_NON_POOLING environment variable is not set",
+      );
+    }
+
     await sql.begin(async (sql) => {
       await seedUsers(sql);
       await seedCustomers(sql);
@@ -116,6 +125,13 @@ export async function GET() {
 
     return Response.json({ message: "Database seeded successfully" });
   } catch (error) {
-    return Response.json({ error }, { status: 500 });
+    console.error("Seeding error:", error);
+    return Response.json(
+      {
+        error: error instanceof Error ? error.message : "Unknown error",
+        details: error,
+      },
+      { status: 500 },
+    );
   }
 }
