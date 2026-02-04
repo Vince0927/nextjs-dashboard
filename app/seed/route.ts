@@ -3,14 +3,19 @@ import bcrypt from "bcryptjs";
 import postgres from "postgres";
 import { invoices, customers, revenue, users } from "../lib/placeholder-data";
 
-const sql = postgres(process.env.POSTGRES_URL_NON_POOLING!, {
-  ssl: "require",
-  max: 1,
-  idle_timeout: 20,
-  connect_timeout: 30,
-});
+// Create a new connection for each request to avoid connection pooling issues
+function createConnection() {
+  return postgres(process.env.POSTGRES_URL_NON_POOLING!, {
+    ssl: "require",
+    max: 1,
+    idle_timeout: 20,
+    connect_timeout: 60, // Increased to 60 seconds for suspended databases
+  });
+}
 
-async function seedUsers(client: typeof sql) {
+type PostgresConnection = ReturnType<typeof createConnection>;
+
+async function seedUsers(client: PostgresConnection) {
   await client`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
   await client`
     CREATE TABLE IF NOT EXISTS users (
@@ -35,7 +40,7 @@ async function seedUsers(client: typeof sql) {
   return insertedUsers;
 }
 
-async function seedInvoices(client: typeof sql) {
+async function seedInvoices(client: PostgresConnection) {
   await client`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
 
   await client`
@@ -61,7 +66,7 @@ async function seedInvoices(client: typeof sql) {
   return insertedInvoices;
 }
 
-async function seedCustomers(client: typeof sql) {
+async function seedCustomers(client: PostgresConnection) {
   await client`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
 
   await client`
@@ -86,7 +91,7 @@ async function seedCustomers(client: typeof sql) {
   return insertedCustomers;
 }
 
-async function seedRevenue(client: typeof sql) {
+async function seedRevenue(client: PostgresConnection) {
   await client`
     CREATE TABLE IF NOT EXISTS revenue (
       month VARCHAR(4) NOT NULL UNIQUE,
@@ -108,6 +113,8 @@ async function seedRevenue(client: typeof sql) {
 }
 
 export async function GET() {
+  const sql = createConnection();
+
   try {
     // Check if database URL is configured
     if (!process.env.POSTGRES_URL_NON_POOLING) {
@@ -118,6 +125,7 @@ export async function GET() {
 
     console.log("Starting database seeding...");
     console.log("Database host:", process.env.POSTGRES_HOST);
+    console.log("Attempting to connect with 60 second timeout...");
 
     await sql.begin(async (sql) => {
       console.log("Seeding users...");
@@ -131,9 +139,11 @@ export async function GET() {
     });
 
     console.log("Database seeded successfully!");
+    await sql.end();
     return Response.json({ message: "Database seeded successfully" });
   } catch (error) {
     console.error("Seeding error:", error);
+    await sql.end({ timeout: 0 });
 
     // Provide more helpful error messages
     let errorMessage = "Unknown error";
@@ -146,7 +156,7 @@ export async function GET() {
         error.message.includes("ETIMEDOUT")
       ) {
         errorMessage =
-          "Database connection timeout. The database might be suspended (Neon free tier). Please try again in a few seconds to wake it up.";
+          "Database connection timeout. The database is suspended (Neon free tier). Please wait 30 seconds and try again to wake it up.";
       }
     }
 
