@@ -1,15 +1,40 @@
-'use client';
+// ============================================================================
+// EDIT INVOICE FORM - Client Component for editing existing invoices
+// ============================================================================
+// This is a CLIENT COMPONENT (marked with 'use client') because it uses:
+// - React hooks (useActionState)
+// - Interactive form elements
+// - Client-side state management
+//
+// The key difference from create-form.tsx is:
+// - Pre-fills form fields with existing invoice data (using defaultValue/defaultChecked)
+// - Uses .bind() to pass the invoice ID to the Server Action
+"use client";
 
-import { CustomerField, InvoiceForm } from '@/app/lib/definitions';
+// ============================================================================
+// IMPORTS
+// ============================================================================
+import { CustomerField, InvoiceForm } from "@/app/lib/definitions"; // TypeScript types
 import {
   CheckIcon,
   ClockIcon,
   CurrencyDollarIcon,
   UserCircleIcon,
-} from '@heroicons/react/24/outline';
-import Link from 'next/link';
-import { Button } from '@/app/ui/button';
+} from "@heroicons/react/24/outline"; // Icon components
+import Link from "next/link"; // Next.js Link component
+import { Button } from "@/app/ui/button"; // Reusable button component
+import { updateInvoice, State } from "@/app/lib/actions"; // Server Action and State type
+import { useActionState } from "react"; // React 19 hook for managing form state
 
+// ============================================================================
+// EDIT FORM COMPONENT
+// ============================================================================
+// This component renders a form for editing an existing invoice.
+// It receives the invoice data and list of customers as props.
+//
+// Props:
+//   - invoice: The invoice object to edit (contains id, customer_id, amount, status)
+//   - customers: Array of customer objects for the dropdown
 export default function EditInvoiceForm({
   invoice,
   customers,
@@ -17,8 +42,23 @@ export default function EditInvoiceForm({
   invoice: InvoiceForm;
   customers: CustomerField[];
 }) {
+  // ============================================================================
+  // STATE MANAGEMENT WITH useActionState AND .bind()
+  // ============================================================================
+  // Initialize the state object
+  const initialState: State = { message: null, errors: {} };
+
+  // IMPORTANT: Use .bind() to create a new function with the invoice ID pre-filled
+  // This is necessary because updateInvoice expects 3 parameters: (id, prevState, formData)
+  // But useActionState only passes 2 parameters: (prevState, formData)
+  // .bind(null, invoice.id) creates: (prevState, formData) => updateInvoice(invoice.id, prevState, formData)
+  const updateInvoiceWithId = updateInvoice.bind(null, invoice.id);
+
+  // useActionState manages the form state and provides the dispatch function
+  const [state, dispatch] = useActionState(updateInvoiceWithId, initialState);
+
   return (
-    <form>
+    <form action={dispatch}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Customer Name */}
         <div className="mb-4">
@@ -31,6 +71,7 @@ export default function EditInvoiceForm({
               name="customerId"
               className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
               defaultValue={invoice.customer_id}
+              aria-describedby="customer-error"
             >
               <option value="" disabled>
                 Select a customer
@@ -42,6 +83,14 @@ export default function EditInvoiceForm({
               ))}
             </select>
             <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+          </div>
+          <div id="customer-error" aria-live="polite" aria-atomic="true">
+            {state.errors?.customerId &&
+              state.errors.customerId.map((error: string) => (
+                <p className="mt-2 text-sm text-red-500" key={error}>
+                  {error}
+                </p>
+              ))}
           </div>
         </div>
 
@@ -60,9 +109,18 @@ export default function EditInvoiceForm({
                 defaultValue={invoice.amount}
                 placeholder="Enter USD amount"
                 className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                aria-describedby="amount-error"
               />
               <CurrencyDollarIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
             </div>
+          </div>
+          <div id="amount-error" aria-live="polite" aria-atomic="true">
+            {state.errors?.amount &&
+              state.errors.amount.map((error: string) => (
+                <p className="mt-2 text-sm text-red-500" key={error}>
+                  {error}
+                </p>
+              ))}
           </div>
         </div>
 
@@ -79,7 +137,7 @@ export default function EditInvoiceForm({
                   name="status"
                   type="radio"
                   value="pending"
-                  defaultChecked={invoice.status === 'pending'}
+                  defaultChecked={invoice.status === "pending"}
                   className="h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"
                 />
                 <label
@@ -95,7 +153,7 @@ export default function EditInvoiceForm({
                   name="status"
                   type="radio"
                   value="paid"
-                  defaultChecked={invoice.status === 'paid'}
+                  defaultChecked={invoice.status === "paid"}
                   className="h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"
                 />
                 <label
@@ -107,7 +165,21 @@ export default function EditInvoiceForm({
               </div>
             </div>
           </div>
+          <div id="status-error" aria-live="polite" aria-atomic="true">
+            {state.errors?.status &&
+              state.errors.status.map((error: string) => (
+                <p className="mt-2 text-sm text-red-500" key={error}>
+                  {error}
+                </p>
+              ))}
+          </div>
         </fieldset>
+
+        <div aria-live="polite" aria-atomic="true">
+          {state.message ? (
+            <p className="mt-2 text-sm text-red-500">{state.message}</p>
+          ) : null}
+        </div>
       </div>
       <div className="mt-6 flex justify-end gap-4">
         <Link
