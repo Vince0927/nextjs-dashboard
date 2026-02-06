@@ -1,3 +1,6 @@
+// ============================================================================
+// DATA FETCHING - Functions to retrieve data from the database
+// ============================================================================
 import postgres from "postgres";
 
 import {
@@ -10,6 +13,9 @@ import {
 } from "./definitions";
 import { formatCurrency } from "./utils";
 
+// ============================================================================
+// DATABASE CONNECTION
+// ============================================================================
 // Create a connection with proper configuration for local PostgreSQL
 const isLocal =
   process.env.POSTGRES_HOST === "localhost" ||
@@ -22,6 +28,11 @@ const sql = postgres(process.env.POSTGRES_URL!, {
   max: 1,
 });
 
+// ============================================================================
+// FETCH REVENUE
+// ============================================================================
+// Fetches revenue data for the chart.
+// Includes an artificial delay to demonstrate streaming.
 export async function fetchRevenue() {
   try {
     // Artificially delay a response for demo purposes.
@@ -41,6 +52,10 @@ export async function fetchRevenue() {
   }
 }
 
+// ============================================================================
+// FETCH LATEST INVOICES
+// ============================================================================
+// Fetches the last 5 invoices, sorted by date, to display in the dashboard.
 export async function fetchLatestInvoices() {
   try {
     const data = await sql<LatestInvoiceRaw[]>`
@@ -61,6 +76,11 @@ export async function fetchLatestInvoices() {
   }
 }
 
+// ============================================================================
+// FETCH CARD DATA
+// ============================================================================
+// Fetches aggregated data (counts, totals) for the dashboard cards.
+// Uses Promise.all to run queries in parallel for better performance.
 export async function fetchCardData() {
   try {
     // You can probably combine these into a single SQL query
@@ -96,7 +116,11 @@ export async function fetchCardData() {
   }
 }
 
+// ============================================================================
+// FETCH FILTERED INVOICES
+// ============================================================================
 const ITEMS_PER_PAGE = 6;
+// Fetches a paginated list of invoices matching the search query.
 export async function fetchFilteredInvoices(
   query: string,
   currentPage: number,
@@ -132,6 +156,10 @@ export async function fetchFilteredInvoices(
   }
 }
 
+// ============================================================================
+// FETCH INVOICES PAGES
+// ============================================================================
+// Calculates the total number of pages based on the search query.
 export async function fetchInvoicesPages(query: string) {
   try {
     const data = await sql`SELECT COUNT(*)
@@ -153,6 +181,10 @@ export async function fetchInvoicesPages(query: string) {
   }
 }
 
+// ============================================================================
+// FETCH INVOICE BY ID
+// ============================================================================
+// Fetches a specific invoice for the Edit form.
 export async function fetchInvoiceById(id: string) {
   try {
     const data = await sql<InvoiceForm[]>`
@@ -178,6 +210,10 @@ export async function fetchInvoiceById(id: string) {
   }
 }
 
+// ============================================================================
+// FETCH CUSTOMERS
+// ============================================================================
+// Fetches all customers for the dropdown in the Create/Edit forms.
 export async function fetchCustomers() {
   try {
     const customers = await sql<CustomerField[]>`
@@ -195,6 +231,10 @@ export async function fetchCustomers() {
   }
 }
 
+// ============================================================================
+// FETCH FILTERED CUSTOMERS
+// ============================================================================
+// Fetches customer data with aggregated invoice stats for the Customers page.
 export async function fetchFilteredCustomers(query: string) {
   try {
     const data = await sql<CustomersTableType[]>`

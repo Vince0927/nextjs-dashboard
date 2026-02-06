@@ -11,6 +11,9 @@ import { fetchRevenue } from "@/app/lib/data";
 // https://airbnb.io/visx/
 
 export default async function RevenueChart() {
+  // Make the component async to await data fetching.
+  // This component is wrapped in Suspense in page.tsx, so it will
+  // show a skeleton while this data is loading.
   const revenue = await fetchRevenue();
   const chartHeight = 350;
 

@@ -5,6 +5,8 @@ import { lusitana } from "@/app/ui/fonts";
 import { fetchLatestInvoices } from "@/app/lib/data";
 
 export default async function LatestInvoices() {
+  // Fetch data inside the component.
+  // This allows the rest of the page to load while this specific part is waiting for data.
   const latestInvoices = await fetchLatestInvoices();
   return (
     <div className="flex w-full flex-col md:col-span-4">

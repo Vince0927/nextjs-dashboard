@@ -7,6 +7,8 @@ import {
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from './button';
 
+// A simple login form UI.
+// In later chapters, this will be connected to NextAuth.js for authentication.
 export default function LoginForm() {
   return (
     <form className="space-y-3">

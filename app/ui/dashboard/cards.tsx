@@ -15,6 +15,9 @@ const iconMap = {
 };
 
 export default async function CardWrapper() {
+  // Fetch data for all cards at once.
+  // This wrapper allows us to use a single Suspense boundary for the whole group
+  // instead of having them pop in one by one.
   const {
     numberOfInvoices,
     numberOfCustomers,

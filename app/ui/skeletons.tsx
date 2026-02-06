@@ -1,6 +1,7 @@
 // Loading animation
+// The 'shimmer' class creates a moving gradient effect to indicate loading
 const shimmer =
-  'before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent';
+  "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent";
 
 export function CardSkeleton() {
   return (
@@ -18,6 +19,7 @@ export function CardSkeleton() {
   );
 }
 
+// Groups multiple card skeletons to match the layout of CardWrapper
 export function CardsSkeleton() {
   return (
     <>
@@ -82,6 +84,7 @@ export function LatestInvoicesSkeleton() {
   );
 }
 
+// The main skeleton for the entire dashboard page
 export default function DashboardSkeleton() {
   return (
     <>

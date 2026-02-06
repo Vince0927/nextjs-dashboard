@@ -5,20 +5,26 @@ import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { useDebouncedCallback } from "use-debounce";
 
 export default function Search({ placeholder }: { placeholder: string }) {
+  // Hooks to access and manipulate the URL query parameters
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
 
+  // useDebouncedCallback ensures that the code inside runs only after
+  // the user has stopped typing for a specific duration (300ms).
+  // This prevents querying the database on every single keystroke.
   const handleSearch = useDebouncedCallback((term) => {
     //console.log("Searching for:", term);
     const params = new URLSearchParams(searchParams);
-    params.set('page', '1');
+    params.set("page", "1");
 
     if (term) {
       params.set("query", term);
     } else {
       params.delete("query");
     }
+
+    // Update the URL with the new search term without reloading the page
     replace(`${pathname}?${params.toString()}`);
     //i want to output the search term in the console for debugging purposes
     console.log(`Searching for... ${term}`);
