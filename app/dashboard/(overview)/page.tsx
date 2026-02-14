@@ -25,6 +25,8 @@ import {
 export default async function Page() {
   return (
     <main>
+      {/*  The Lusitana font is applied to the entire dashboard heading and content below it. */}
+      
       <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
         <b>Dashboard</b>
         <p>-----------------------------------------</p>
@@ -76,7 +78,7 @@ export default async function Page() {
 
 
 
-        
+
       </h1>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {/* Suspense allows the CardWrapper to load asynchronously.

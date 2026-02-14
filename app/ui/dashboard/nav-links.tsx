@@ -6,7 +6,7 @@ import {
   DocumentDuplicateIcon,
 } from "@heroicons/react/24/outline";
 
-import Link from "next/link";
+import Link from "next/link"; // Next.js Link component for client-side navigation
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 
@@ -30,6 +30,7 @@ export default function NavLinks() {
       {links.map((link) => {
         const LinkIcon = link.icon;
         return (
+          
           <Link
             key={link.name}
             href={link.href}

@@ -1,3 +1,9 @@
+
+// app/dashboard/layout.tsx for side nav and page layout
+//this is the layout for the dashboard section of the app.
+//  It wraps all pages under /dashboard and provides a 
+// consistent layout with a side navigation and main content area.
+
 import SideNav from '@/app/ui/dashboard/sidenav';
  
 export default function Layout({ children }: { children: React.ReactNode }) {

@@ -1,8 +1,11 @@
 import AcmeLogo from "@/app/ui/acme-logo";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
-import { lusitana } from "@/app/ui/fonts";
-import Image from "next/image";
+
+import { lusitana } from "@/app/ui/fonts"; // Import the Lusitana font from the fonts file
+
+import Image from "next/image"; // Import the Image component from Next.js for optimized image handling
+
 import HelloWorld from "@/app/ui/test/HelloWorld";
 
 export default function Page() {
@@ -36,13 +39,17 @@ export default function Page() {
         </div>
         <div className="flex items-center justify-center p-6 md:w-3/5 md:px-28 md:py-12">
           {/* Add Hero Images Here */}
+
+          {/* For desktop standard */}
           <Image
-            src="/hero-desktop.png"
+            src="/hero-desktop.png" //from public folder
             width={1000}
             height={760}
             className="hidden md:block"
             alt="Screenshots of the dashboard project showing desktop version"
           />
+
+          {/* For mobile standard */}
           <Image
             src="/hero-mobile.png"
             width={560}
