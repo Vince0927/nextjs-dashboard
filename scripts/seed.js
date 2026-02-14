@@ -150,7 +150,13 @@ const revenue = [
   { month: "Dec", revenue: 4800 },
 ];
 
-const sql = postgres(process.env.POSTGRES_URL, { ssl: "require" });
+const isLocal =
+  process.env.POSTGRES_HOST === "localhost" ||
+  process.env.POSTGRES_HOST === "127.0.0.1";
+
+const sql = postgres(process.env.POSTGRES_URL, {
+  ssl: isLocal ? false : "require",
+});
 
 async function seedUsers() {
   try {
@@ -170,8 +176,7 @@ async function seedUsers() {
         const hashedPassword = await bcrypt.hash(user.password, 10);
         return sql`
           INSERT INTO users (id, name, email, password)
-          VALUES (${user.id}, ${user.name}, ${user.email}, ${hashedPassword})
-          ON CONFLICT (id) DO NOTHING;
+          VALUES (${user.id}, ${user.name}, ${user.email}, ${hashedPassword});
         `;
       }),
     );

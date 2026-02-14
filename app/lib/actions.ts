@@ -13,6 +13,30 @@ import { z } from "zod"; // Zod: TypeScript-first schema validation library
 import postgres from "postgres"; // PostgreSQL client for Node.js
 import { revalidatePath } from "next/cache"; // Next.js function to revalidate cached data
 import { redirect } from "next/navigation"; // Next.js function to redirect users
+import { signIn } from "@/auth";
+import { AuthError } from "next-auth";
+
+// ============================================================================
+// AUTHENTICATE - Server Action for user login
+// ============================================================================
+export async function authenticate(
+  prevState: string | undefined,
+  formData: FormData,
+) {
+  try {
+    await signIn("credentials", formData);
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case "CredentialsSignin":
+          return "Invalid credentials.";
+        default:
+          return "Something went wrong.";
+      }
+    }
+    throw error;
+  }
+}
 
 // ============================================================================
 // DATABASE CONNECTION SETUP
