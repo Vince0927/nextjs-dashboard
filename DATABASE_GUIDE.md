@@ -222,3 +222,19 @@ pnpm seed:local
 # Start dev server
 pnpm dev
 ```
+
+#Seeding Process to database
+nextjs-dashboard\scripts\seed.sql
+
+I've analyzed seed.sql and scripts/seed.js. seed.sql outlines table schemas and directly inserts data, including UUID
+extension and conflict handling. scripts/seed.js is a Node.js script utilizing the postgres library to programmatically
+seed data. It creates tables, inserts placeholder data (hashing user passwords with bcrypt), and manages conflicts.
+seed.js seems to be the primary seeding method. Next, I'll examine seed-cli.js, seed-direct.js, seed-local.js, and
+seed-simple.js in the scripts directory to understand any alternative seeding approaches.
+
+I've analyzed the data seeding methods in this project. seed.sql defines the core schema and initial data. Programmatic
+seeding occurs via seed.js and seed-cli.js, handling password hashing and dynamic table creation. Direct seed.sql  
+ execution is managed by seed-direct.js and seed-simple.js for applying raw SQL. seed-local.js facilitates local
+PostgreSQL setup, including database creation and seed.sql application. Each script suits different environments, but  
+ all rely on seed.sql and connect to PostgreSQL, configured by environment variables or hardcoded local settings. This  
+ fulfills the request to understand the seeding process without modifying the codebase.

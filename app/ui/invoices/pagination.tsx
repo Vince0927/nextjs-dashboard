@@ -9,10 +9,10 @@ import { usePathname, useSearchParams } from "next/navigation";
 export default function Pagination({ totalPages }: { totalPages: number }) {
   // NOTE: Uncomment this code in Chapter 10
 
-  // const allPages = generatePagination(currentPage, totalPages);
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentPage = Number(searchParams.get("page")) || 1;
+  const allPages = generatePagination(currentPage, totalPages);
 
   const createPageURL = (pageNumber: number | string) => {
     const params = new URLSearchParams(searchParams);
@@ -24,7 +24,7 @@ export default function Pagination({ totalPages }: { totalPages: number }) {
     <>
       {/*  NOTE: Uncomment this code in Chapter 10 */}
 
-      {/* <div className="inline-flex">
+      <div className="inline-flex">
         <PaginationArrow
           direction="left"
           href={createPageURL(currentPage - 1)}
@@ -33,12 +33,12 @@ export default function Pagination({ totalPages }: { totalPages: number }) {
 
         <div className="flex -space-x-px">
           {allPages.map((page, index) => {
-            let position: 'first' | 'last' | 'single' | 'middle' | undefined;
+            let position: "first" | "last" | "single" | "middle" | undefined;
 
-            if (index === 0) position = 'first';
-            if (index === allPages.length - 1) position = 'last';
-            if (allPages.length === 1) position = 'single';
-            if (page === '...') position = 'middle';
+            if (index === 0) position = "first";
+            if (index === allPages.length - 1) position = "last";
+            if (allPages.length === 1) position = "single";
+            if (page === "...") position = "middle";
 
             return (
               <PaginationNumber
@@ -57,7 +57,7 @@ export default function Pagination({ totalPages }: { totalPages: number }) {
           href={createPageURL(currentPage + 1)}
           isDisabled={currentPage >= totalPages}
         />
-      </div> */}
+      </div>
     </>
   );
 }
@@ -127,3 +127,29 @@ function PaginationArrow({
     </Link>
   );
 }
+
+/*
+
+
+What is pagination.tsx?
+This file creates the UI component that allows users to navigate through different pages of data (in this case, invoices). It relies on URL Search Parameters rather than local React state, which is a best practice in Next.js for dashboard applications.
+
+Here is a breakdown of how it works:
+
+URL-Driven State: It uses useSearchParams to read the current page number directly from the URL (e.g., ?page=2). This ensures that if you copy and paste the URL, you land on the exact same page of data.
+createPageURL: This helper function generates the link for the next, previous, or specific page numbers. It takes the current URL parameters, updates the page parameter, and returns the new full URL string.
+generatePagination: This utility (imported from utils.ts) calculates exactly which page numbers to display. For example, if you are on page 50 of 100, it might return [1, '...', 49, 50, 51, '...', 100].
+Sub-components:
+PaginationArrow: Renders the Left/Right arrows and handles disabling them (e.g., disabling "Left" if you are on Page 1).
+PaginationNumber: Renders the individual page number squares and highlights the current active page.
+The Issue and Fix
+The code currently crashes with a ReferenceError.
+
+The Problem: You are trying to use the variable currentPage inside generatePagination(currentPage, totalPages) before you have actually defined what currentPage is. In JavaScript, variables must be declared before they are used.
+
+The Fix: Move the definition of pathname, searchParams, and currentPage to the top of the component, before you call generatePagination.
+
+Here is the fix:
+
+
+*/

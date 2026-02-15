@@ -20,13 +20,16 @@ import {
   categories,
 } from "@/app/lib/placeholder-data";
 
+//import from data file -> revenue-chart2 ->page.tsx
+import { RevenueChart2 } from "@/app/ui/dashboard/revenue-chart2";
+
 // This is an async Server Component. It allows us to fetch data directly
 // on the server, but we delegate the specific fetching to child components.
 export default async function Page() {
   return (
     <main>
       {/*  The Lusitana font is applied to the entire dashboard heading and content below it. */}
-      
+
       <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
         <b>Dashboard</b>
         <p>-----------------------------------------</p>
@@ -73,12 +76,8 @@ export default async function Page() {
           </div>
         ))}
         <p>-----------------------------------------</p>
-
-
-
-
-
-
+        <RevenueChart2 />
+        <p>-----------------------------------------</p>
       </h1>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {/* Suspense allows the CardWrapper to load asynchronously.

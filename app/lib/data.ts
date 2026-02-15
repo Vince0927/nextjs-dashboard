@@ -39,11 +39,22 @@ export async function fetchRevenue() {
     // Don't do this in production :)
 
     console.log("Fetching revenue data...");
-    await new Promise((resolve) => setTimeout(resolve, 3000));
 
-    const data = await sql<Revenue[]>`SELECT * FROM revenue`;
+    //simulate a 3 second delay for fetching data from the database. Adjust as needed for testing.
+    await new Promise((resolve) => setTimeout(resolve, 3000)); //not needed in production, just for testing Suspense and loading states.
+    //filter for all months
+    //const data = await sql<Revenue[]>`SELECT * FROM revenue`;
 
-    console.log("Data fetch completed after 3 seconds.");
+    //filter for month of december only
+    //const data = await sql<Revenue[]>`SELECT * FROM revenue WHERE month = 'Dec'`;
+    //filter for months of jan to march only
+    const data = await sql<
+      Revenue[]
+    >`SELECT * FROM revenue WHERE month IN ('Jan', 'Feb', '13th', 'Mar')`;
+
+    console.log(
+      "Data fetch completed after 3 seconds. This is for testing only",
+    );
 
     return data;
   } catch (error) {
@@ -65,10 +76,12 @@ export async function fetchLatestInvoices() {
       ORDER BY invoices.date DESC
       LIMIT 5`;
 
+    // Format the amount from cents to dollars and add a currency symbol for display.
     const latestInvoices = data.map((invoice) => ({
       ...invoice,
       amount: formatCurrency(invoice.amount),
     }));
+
     return latestInvoices;
   } catch (error) {
     console.error("Database Error:", error);
@@ -92,13 +105,14 @@ export async function fetchCardData() {
          SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) AS "paid",
          SUM(CASE WHEN status = 'pending' THEN amount ELSE 0 END) AS "pending"
          FROM invoices`;
-
+    // Wait for all queries to complete before proceeding.
     const data = await Promise.all([
       invoiceCountPromise,
       customerCountPromise,
       invoiceStatusPromise,
     ]);
 
+    // Extract and format the results for the cards. Handle potential null values with defaults.
     const numberOfInvoices = Number(data[0][0].count ?? "0");
     const numberOfCustomers = Number(data[1][0].count ?? "0");
     const totalPaidInvoices = formatCurrency(data[2][0].paid ?? "0");
@@ -265,5 +279,20 @@ export async function fetchFilteredCustomers(query: string) {
   } catch (err) {
     console.error("Database Error:", err);
     throw new Error("Failed to fetch customer table.");
+  }
+}
+
+//testing fetching of new revenue record for the 13th month
+export async function fetchRevenue2() {
+  try {
+    await new Promise((res) => setTimeout(res, 3000)); //delay
+    const data = await sql<
+      Revenue[]
+    >`SELECT * FROM revenue WHERE month = '13th'`;
+
+    console.log("Fetched revenue data for the 13th month!");
+    return data;
+  } catch (error) {
+    console.error(error);
   }
 }

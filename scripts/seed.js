@@ -135,6 +135,7 @@ const invoices = [
   },
 ];
 
+//revenue data for the past 12 months (Jan to Dec)
 const revenue = [
   { month: "Jan", revenue: 2000 },
   { month: "Feb", revenue: 1800 },
@@ -148,6 +149,7 @@ const revenue = [
   { month: "Oct", revenue: 2800 },
   { month: "Nov", revenue: 3000 },
   { month: "Dec", revenue: 4800 },
+  { month: "13th", revenue: 5000 }, // New revenue record added for testing
 ];
 
 const isLocal =
@@ -176,7 +178,8 @@ async function seedUsers() {
         const hashedPassword = await bcrypt.hash(user.password, 10);
         return sql`
           INSERT INTO users (id, name, email, password)
-          VALUES (${user.id}, ${user.name}, ${user.email}, ${hashedPassword});
+          VALUES (${user.id}, ${user.name}, ${user.email}, ${hashedPassword}) 
+          ON CONFLICT (id) DO NOTHING;
         `;
       }),
     );
@@ -252,15 +255,17 @@ async function seedInvoices() {
   }
 }
 
+//seeding revenue data
 async function seedRevenue() {
   try {
+    //// 1. Create the table if it doesn't exist
     await sql`
       CREATE TABLE IF NOT EXISTS revenue (
         month VARCHAR(4) NOT NULL UNIQUE,
         revenue INT NOT NULL
       );
     `;
-
+    //// 2. Insert data from the 'revenue' array
     const insertedRevenue = await Promise.all(
       revenue.map(
         (rev) => sql`
@@ -279,6 +284,7 @@ async function seedRevenue() {
   }
 }
 
+// Main function to run all seeders
 async function main() {
   console.log("🌱 Starting database seeding...");
 
@@ -297,3 +303,78 @@ async function main() {
 }
 
 main();
+
+/*
+
+
+How Revenue Data is Seeded
+The seeding process for revenue happens in the seedRevenue function. Here is the breakdown of the logic:
+
+Table Creation: It first ensures the revenue table exists in your database using CREATE TABLE IF NOT EXISTS. It sets the month column as a unique identifier.
+Data Insertion: It iterates over the revenue array (defined at the top of the file) and runs an INSERT query for each record.
+Conflict Handling: It uses ON CONFLICT (month) DO NOTHING to prevent errors if you run the script multiple times. If data for that month already exists, it skips it.
+
+
+
+
+How to Run the Script
+To run this script, you need to execute it using Node.js from your terminal.
+
+Ensure Environment Variables are Set: Make sure you have a .env file in your project root with a valid POSTGRES_URL.
+Open Terminal: Navigate to the root directory of your project (nextjs-dashboard).
+Run Command:
+bash
+node scripts/seed.js
+This will execute the main() function in the file, which calls seedRevenue() along with the other seeding functions.
+
+
+
+
+
+ADDING A NEW DATA ON REVENUE AND ON CONFLICT USER
+
+
+To add new data to the revenue table without breaking the code, you need to modify the revenue array in scripts/seed.js.
+
+However, there is a critical issue in your seedUsers function: it lacks an ON CONFLICT clause. If you try to run the seed script again to add your new revenue data, the script will crash because it tries to insert the user again. I have included a fix for this in the diff below so you can re-run the script safely.
+
+Here are the steps:
+
+Add the new data object to the revenue array.
+Note: The month column is defined as VARCHAR(4), so your month label must be 4 characters or less (e.g., "Jan", "Test", "13th").
+Fix the seedUsers function to handle existing users gracefully (preventing the "breaking" of the code).
+Code Changes
+seed.js
+-1
++3
+  { month: "Oct", revenue: 2800 },
+  { month: "Nov", revenue: 3000 },
+  { month: "Dec", revenue: 4800 },
+  { month: "13th", revenue: 5000 },
+];
+
+const isLocal =
+        const hashedPassword = await bcrypt.hash(user.password, 10);
+        return sql`
+          INSERT INTO users (id, name, email, password)
+          VALUES (${user.id}, ${user.name}, ${user.email}, ${hashedPassword});
+          VALUES (${user.id}, ${user.name}, ${user.email}, ${hashedPassword})
+          ON CONFLICT (id) DO NOTHING;
+        `;
+      }),
+    );
+How to Run It
+After saving the changes, run the seed script in your terminal:
+
+bash
+node scripts/seed.js
+This will insert the new revenue record. Existing records will be skipped thanks to the ON CONFLICT clauses.
+
+
+
+
+
+
+
+
+*/

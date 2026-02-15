@@ -3,6 +3,7 @@ import { CalendarIcon } from "@heroicons/react/24/outline";
 import { lusitana } from "@/app/ui/fonts";
 import { Revenue } from "@/app/lib/definitions";
 import { fetchRevenue } from "@/app/lib/data";
+import { fetchRevenue2 } from "@/app/lib/data";
 
 // This component is representational only.
 // For data visualization UI, check out:
@@ -14,8 +15,8 @@ export default async function RevenueChart() {
   // Make the component async to await data fetching.
   // This component is wrapped in Suspense in page.tsx, so it will
   // show a skeleton while this data is loading.
-  const revenue = await fetchRevenue();
-  const chartHeight = 350;
+  const revenue = await fetchRevenue(); // Fetch revenue data from the database. This will take 3 seconds due to the artificial delay in fetchRevenue, which is useful for testing Suspense and loading states.
+  const chartHeight = 450; //original was 350, increased to 450 for better visibility of the bars. Adjust as needed.
 
   const { yAxisLabels, topLabel } = generateYAxis(revenue);
 
@@ -26,7 +27,7 @@ export default async function RevenueChart() {
   return (
     <div className="w-full md:col-span-4">
       <h2 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
-        <b>Recent Revenue</b>
+        <b>Recent Revenue2</b>
       </h2>
 
       <div className="rounded-xl bg-gray-50 p-4">
