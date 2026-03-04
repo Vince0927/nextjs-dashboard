@@ -33,7 +33,7 @@ export default async function Page() {
       {/*  The Lusitana font is applied to the entire dashboard heading and content below it. */}
 
       <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
-        <b>Dashboard</b>
+        <b>Dashboard2</b>
         <p>-----------------------------------------</p>
         <p>{users[0].name}</p>
         <p>{users[0].email}</p>
