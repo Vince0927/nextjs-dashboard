@@ -53,10 +53,5 @@
     "@types/react": "19.0.7",
     "@types/react-dom": "19.0.3",
     "shadcn-ui": "^0.9.5"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "sharp"
-    ]
   }
 }
