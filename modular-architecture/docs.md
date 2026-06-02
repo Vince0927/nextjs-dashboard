@@ -65,3 +65,8 @@ app\ui\global.css - root css layout
 
 You can use this file to add CSS rules to all the routes in your application - such as CSS reset rules, site-wide styles for HTML elements like links, and more.
 
+If you take a look inside global.css, you'll notice some @tailwind directives:
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

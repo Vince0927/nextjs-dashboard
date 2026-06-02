@@ -31,7 +31,7 @@ export default async function Page() {
   return (
     <main>
       {/*  The Lusitana font is applied to the entire dashboard heading and content below it. */}
-
+      <h1 className="text-blue-500">I'm blue from Tailwind!</h1>
       <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
         <b>Dashboard</b>
         <p>-----------------------------------------</p>
@@ -43,6 +43,7 @@ export default async function Page() {
           <p key={customer.id}>{customer.image_url}</p>
         ))}
         <p>-----------------------------------------</p>
+        
         {/* loop through every invoice customer id 
         {invoices.map((invoice) => (
           <p key={invoice.id}>{invoice.customer_id}</p>
