@@ -8,7 +8,7 @@
 - Port: `5432`
 - Database: `neondb`
 - User: `postgres`
-- Password: `Postgresql144`
+- Password: `Postgresql143!`
 
 **Tables:**
 
