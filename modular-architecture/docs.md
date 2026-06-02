@@ -60,6 +60,8 @@ has page.tsx that contains the main home page with several interactive component
 2. CSS STYLING
 
 app\layout.tsx
-app\ui\global.css
 
+app\ui\global.css - root css layout
+
+You can use this file to add CSS rules to all the routes in your application - such as CSS reset rules, site-wide styles for HTML elements like links, and more.
 

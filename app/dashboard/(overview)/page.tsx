@@ -43,10 +43,11 @@ export default async function Page() {
           <p key={customer.id}>{customer.image_url}</p>
         ))}
         <p>-----------------------------------------</p>
-        {/* loop through every invoice customer id */}
+        {/* loop through every invoice customer id 
         {invoices.map((invoice) => (
-          <p key={invoice.customer_id}>{invoice.customer_id}</p>
+          <p key={invoice.id}>{invoice.customer_id}</p>
         ))}
+        */}
         <p>-----------------------------------------</p>
         {/* loop through all revenue data */}
         {revenue.map((rev) => (
